@@ -1,0 +1,542 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Will You Be My Valentine?</title>
+  <style>
+    :root {
+      --bg1: #ffe3ec;
+      --bg2: #ffd6d6;
+      --ink: #5c1030;
+      --yes: #ff2e63;
+      --yes-dark: #d81b54;
+      --no: #ffffff;
+      --no-ink: #5c1030;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 20% 20%, #fff3f7 0%, transparent 35%),
+        radial-gradient(circle at 80% 15%, #fff0f5 0%, transparent 30%),
+        linear-gradient(135deg, var(--bg1), var(--bg2));
+      overflow: hidden;
+    }
+
+    .hearts {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.35;
+      background-image:
+        radial-gradient(circle at 10% 10%, #ff8fab 0 3px, transparent 4px),
+        radial-gradient(circle at 30% 70%, #ff6b9a 0 4px, transparent 5px),
+        radial-gradient(circle at 70% 40%, #ff8fab 0 3px, transparent 4px),
+        radial-gradient(circle at 85% 80%, #ff6b9a 0 4px, transparent 5px);
+      background-size: 300px 300px;
+      animation: floatbg 18s linear infinite;
+    }
+
+    @keyframes floatbg {
+      from { transform: translateY(0); }
+      to { transform: translateY(-120px); }
+    }
+
+    .wrap {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .card {
+      width: min(780px, 94vw);
+      min-height: 460px;
+      background: rgba(255, 255, 255, 0.82);
+      border: 2px solid rgba(255, 255, 255, 0.95);
+      border-radius: 24px;
+      box-shadow: 0 24px 48px rgba(190, 46, 93, 0.25);
+      backdrop-filter: blur(6px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .content {
+      padding: 40px 28px 32px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.8rem, 3.6vw, 3rem);
+      line-height: 1.2;
+      letter-spacing: 0.3px;
+    }
+
+    p {
+      margin: 0;
+      font-size: clamp(1rem, 2.2vw, 1.25rem);
+      opacity: 0.9;
+    }
+
+    .buttons {
+      margin-top: 12px;
+      width: 100%;
+      height: 260px;
+      position: relative;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+      font-weight: 700;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .yes {
+      position: absolute;
+      left: 26%;
+      top: 55%;
+      transform: translate(-50%, -50%) scale(1);
+      transform-origin: center;
+      min-width: 130px;
+      min-height: 52px;
+      padding: 12px 22px;
+      border-radius: 999px;
+      color: white;
+      font-size: 1.15rem;
+      background: linear-gradient(180deg, var(--yes), var(--yes-dark));
+      box-shadow: 0 10px 20px rgba(216, 27, 84, 0.34);
+      z-index: 2;
+    }
+
+    .yes:hover {
+      transform: translate(-50%, -50%) scale(var(--yes-scale, 1.02));
+    }
+
+    .no {
+      position: absolute;
+      left: 66%;
+      top: 55%;
+      min-width: 130px;
+      min-height: 52px;
+      padding: 12px 22px;
+      border-radius: 999px;
+      font-size: 1.05rem;
+      color: var(--no-ink);
+      background: var(--no);
+      box-shadow: 0 8px 16px rgba(92, 16, 48, 0.18);
+      z-index: 3;
+      user-select: none;
+    }
+
+    .hint {
+      font-size: 0.9rem;
+      opacity: 0.72;
+      min-height: 1.25rem;
+    }
+
+    .meter {
+      width: min(480px, 82%);
+      height: 12px;
+      border-radius: 999px;
+      background: #ffd5e2;
+      overflow: hidden;
+      border: 1px solid #ffc0d3;
+    }
+
+    .meter-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #ff6f91, #ff2e63);
+      transition: width 0.15s linear;
+    }
+
+    .explode {
+      animation: explode 0.55s ease forwards;
+      pointer-events: none;
+    }
+
+    @keyframes explode {
+      0% { transform: translate(-50%, -50%) scale(var(--yes-scale, 1)); opacity: 1; filter: blur(0); }
+      55% { transform: translate(-50%, -50%) scale(calc(var(--yes-scale, 1) * 1.8)); opacity: 1; filter: blur(0.5px); }
+      100% { transform: translate(-50%, -50%) scale(calc(var(--yes-scale, 1) * 2.7)); opacity: 0; filter: blur(5px); }
+    }
+
+    .confetti-piece {
+      position: absolute;
+      width: 10px;
+      height: 14px;
+      border-radius: 2px;
+      opacity: 0.95;
+      animation: confetti-fall 1.2s ease-out forwards;
+      z-index: 6;
+    }
+
+    @keyframes confetti-fall {
+      0% {
+        transform: translate(0, 0) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translate(var(--dx), var(--dy)) rotate(var(--rot));
+        opacity: 0;
+      }
+    }
+
+    .result {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      background: linear-gradient(160deg, #fff0f5 0%, #ffe3ec 100%);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.45s ease;
+      z-index: 10;
+    }
+
+    .result.show {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .result-card {
+      text-align: center;
+      width: min(540px, 92%);
+    }
+
+    .result h2 {
+      margin: 0 0 12px;
+      font-size: clamp(1.6rem, 4vw, 2.4rem);
+      color: #a30f41;
+    }
+
+    .result p {
+      margin: 0 0 16px;
+    }
+
+    .result img {
+      width: min(360px, 100%);
+      border-radius: 20px;
+      border: 4px solid #fff;
+      box-shadow: 0 18px 32px rgba(163, 15, 65, 0.22);
+      object-fit: cover;
+      aspect-ratio: 1 / 1;
+      background: #fff;
+    }
+
+    .embed-wrap {
+      width: min(420px, 100%);
+      border-radius: 20px;
+      border: 4px solid #fff;
+      box-shadow: 0 18px 32px rgba(163, 15, 65, 0.22);
+      overflow: hidden;
+      background: #fff;
+      margin: 0 auto;
+    }
+
+    .embed-wrap video {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    @media (max-width: 640px) {
+      .card {
+        min-height: 520px;
+      }
+
+      .buttons {
+        height: 290px;
+      }
+
+      .yes, .no {
+        min-width: 118px;
+        min-height: 48px;
+      }
+
+      .yes {
+        left: 34%;
+      }
+
+      .no {
+        left: 66%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="hearts" aria-hidden="true"></div>
+  <div class="wrap">
+    <main class="card" id="card">
+      <section class="content" id="mainContent">
+        <h1>Will you be my Valentine?</h1>
+        <p>You only have two options, but one is very slippery.</p>
+
+        <div class="meter" aria-hidden="true">
+          <div class="meter-fill" id="meterFill"></div>
+        </div>
+
+        <p class="hint" id="hint">Try to click "No" if you can.</p>
+
+        <div class="buttons" id="arena">
+          <button class="yes" id="yesBtn" type="button">Yes</button>
+          <button class="no" id="noBtn" type="button">No</button>
+        </div>
+      </section>
+
+      <section class="result" id="result">
+        <div class="result-card">
+          <h2>I knew you'd say yes.</h2>
+          <p>Happy Valentine's Day, my love.</p>
+          <div class="embed-wrap">
+            <video id="finalVideo" playsinline preload="metadata">
+              <source src="./vid.mp4" type="video/mp4" />
+            </video>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const arena = document.getElementById("arena");
+    const noBtn = document.getElementById("noBtn");
+    const yesBtn = document.getElementById("yesBtn");
+    const hint = document.getElementById("hint");
+    const meterFill = document.getElementById("meterFill");
+    const result = document.getElementById("result");
+    const card = document.getElementById("card");
+    const finalVideo = document.getElementById("finalVideo");
+
+    let yesScale = 1;
+    const threshold = 3.2;
+    let exploded = false;
+    let noX = 0;
+    let noY = 0;
+    let noTargetX = 0;
+    let noTargetY = 0;
+    let isNoAnimRunning = false;
+
+    const hints = [
+      "Nope. Try harder.",
+      "Still too slow 😌",
+      "That button has commitment issues.",
+      "Almost... not really.",
+      "The universe wants you to click Yes."
+    ];
+
+    function clamp(num, min, max) {
+      return Math.min(Math.max(num, min), max);
+    }
+
+    function setNoButtonPosition(leftPx, topPx) {
+      noX = leftPx;
+      noY = topPx;
+      noBtn.style.left = `${noX}px`;
+      noBtn.style.top = `${noY}px`;
+    }
+
+    function setNoTargetPosition(leftPx, topPx) {
+      noTargetX = leftPx;
+      noTargetY = topPx;
+      startNoAnimation();
+    }
+
+    function startNoAnimation() {
+      if (isNoAnimRunning) return;
+      isNoAnimRunning = true;
+      requestAnimationFrame(animateNoButton);
+    }
+
+    function animateNoButton() {
+      const dx = noTargetX - noX;
+      const dy = noTargetY - noY;
+      noX += dx * 0.24;
+      noY += dy * 0.24;
+      noBtn.style.left = `${noX}px`;
+      noBtn.style.top = `${noY}px`;
+
+      if (Math.abs(dx) + Math.abs(dy) < 0.6) {
+        noX = noTargetX;
+        noY = noTargetY;
+        noBtn.style.left = `${noX}px`;
+        noBtn.style.top = `${noY}px`;
+        isNoAnimRunning = false;
+        return;
+      }
+      requestAnimationFrame(animateNoButton);
+    }
+
+    function growYesButton(amount = 0.045) {
+      yesScale = clamp(yesScale + amount, 1, threshold + 0.1);
+      yesBtn.style.setProperty("--yes-scale", yesScale.toFixed(3));
+      yesBtn.style.transform = `translate(-50%, -50%) scale(${yesScale.toFixed(3)})`;
+      meterFill.style.width = `${clamp((yesScale / threshold) * 100, 0, 100)}%`;
+
+      if (yesScale >= threshold && !exploded) {
+        explodeYes();
+      }
+    }
+
+    function randomizeHint() {
+      hint.textContent = hints[Math.floor(Math.random() * hints.length)];
+    }
+
+    function moveNoButtonFromPointer(event) {
+      if (exploded) return;
+
+      const arenaRect = arena.getBoundingClientRect();
+      const noCenterX = arenaRect.left + noX + noBtn.offsetWidth / 2;
+      const noCenterY = arenaRect.top + noY + noBtn.offsetHeight / 2;
+
+      const dx = noCenterX - event.clientX;
+      const dy = noCenterY - event.clientY;
+      const distance = Math.hypot(dx, dy);
+
+      const influenceRadius = 125;
+      if (distance > influenceRadius) return;
+
+      const force = clamp((influenceRadius - distance) / influenceRadius, 0, 1);
+      const push = 24 + force * 48;
+
+      const vx = dx / (distance || 1);
+      const vy = dy / (distance || 1);
+
+      let newLeft = noTargetX + vx * push;
+      let newTop = noTargetY + vy * push;
+
+      const maxLeft = arenaRect.width - noBtn.offsetWidth;
+      const maxTop = arenaRect.height - noBtn.offsetHeight;
+
+      if (newLeft < 0 || newLeft > maxLeft) {
+        newLeft = Math.random() * maxLeft;
+      }
+      if (newTop < 0 || newTop > maxTop) {
+        newTop = Math.random() * maxTop;
+      }
+
+      setNoTargetPosition(newLeft, newTop);
+      randomizeHint();
+
+      const growth = clamp(0.018 + force * 0.05, 0.02, 0.08);
+      growYesButton(growth);
+    }
+
+    function spawnConfetti(x, y) {
+      const colors = ["#ff2e63", "#ff8fab", "#ffd166", "#06d6a0", "#118ab2", "#ffffff"];
+      const pieces = 44;
+
+      for (let i = 0; i < pieces; i += 1) {
+        const piece = document.createElement("span");
+        piece.className = "confetti-piece";
+        piece.style.left = `${x}px`;
+        piece.style.top = `${y}px`;
+        piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+
+        const angle = Math.random() * Math.PI * 2;
+        const distance = 90 + Math.random() * 220;
+        const dx = Math.cos(angle) * distance;
+        const dy = Math.sin(angle) * distance + (80 + Math.random() * 70);
+        const rot = `${Math.floor(Math.random() * 720 - 360)}deg`;
+
+        piece.style.setProperty("--dx", `${dx.toFixed(1)}px`);
+        piece.style.setProperty("--dy", `${dy.toFixed(1)}px`);
+        piece.style.setProperty("--rot", rot);
+
+        card.appendChild(piece);
+        setTimeout(() => piece.remove(), 1250);
+      }
+    }
+
+    function showResult() {
+      result.classList.add("show");
+      if (!finalVideo) return;
+      finalVideo.currentTime = 0;
+      finalVideo.play().catch(() => {});
+    }
+
+    function explodeYes() {
+      exploded = true;
+      yesBtn.classList.add("explode");
+      hint.textContent = "Boom. Destiny confirmed.";
+
+      const yesRect = yesBtn.getBoundingClientRect();
+      const cardRect = card.getBoundingClientRect();
+      const x = yesRect.left - cardRect.left + yesRect.width / 2;
+      const y = yesRect.top - cardRect.top + yesRect.height / 2;
+      spawnConfetti(x, y);
+
+      setTimeout(() => {
+        showResult();
+      }, 520);
+    }
+
+    function keepNoUnsafe() {
+      noBtn.addEventListener("pointerdown", (event) => {
+        event.preventDefault();
+        moveNoButtonFromPointer(event);
+      });
+
+      noBtn.addEventListener("mouseenter", (event) => {
+        moveNoButtonFromPointer(event);
+      });
+
+      noBtn.addEventListener("click", (event) => {
+        event.preventDefault();
+      });
+    }
+
+    function handlePointer(event) {
+      moveNoButtonFromPointer(event);
+    }
+
+    arena.addEventListener("pointermove", handlePointer);
+    keepNoUnsafe();
+
+    yesBtn.addEventListener("click", () => {
+      if (!exploded) {
+        spawnConfetti(yesBtn.offsetLeft, yesBtn.offsetTop);
+        hint.textContent = "Correct choice. Happy Valentine's Day!";
+        showResult();
+      }
+    });
+
+    // Place the No button in absolute px coordinates after layout for smoother movement.
+    window.addEventListener("load", () => {
+      const initialLeft = arena.clientWidth * 0.66;
+      const initialTop = arena.clientHeight * 0.55;
+      setNoButtonPosition(initialLeft, initialTop);
+      setNoTargetPosition(initialLeft, initialTop);
+      yesBtn.style.setProperty("--yes-scale", "1");
+    });
+
+    window.addEventListener("resize", () => {
+      const maxLeft = arena.clientWidth - noBtn.offsetWidth;
+      const maxTop = arena.clientHeight - noBtn.offsetHeight;
+      const clampedX = clamp(noX, 0, maxLeft);
+      const clampedY = clamp(noY, 0, maxTop);
+      setNoButtonPosition(clampedX, clampedY);
+      setNoTargetPosition(clampedX, clampedY);
+    });
+  </script>
+</body>
+</html>
