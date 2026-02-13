@@ -521,6 +521,12 @@
       }
     });
 
+    result.addEventListener("pointerdown", () => {
+      if (!finalVideo) return;
+      finalVideo.muted = false;
+      finalVideo.play().catch(() => {});
+    }, { once: true });
+
     // Place the No button in absolute px coordinates after layout for smoother movement.
     window.addEventListener("load", () => {
       const initialLeft = arena.clientWidth * 0.66;
