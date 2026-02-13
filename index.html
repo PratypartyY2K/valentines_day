@@ -308,7 +308,7 @@
           <h2>I knew you'd say yes.</h2>
           <p>Happy Valentine's Day, my love.</p>
           <div class="embed-wrap">
-            <video id="finalVideo" playsinline preload="metadata">
+            <video id="finalVideo" playsinline muted preload="metadata">
               <source src="./vid.mp4" type="video/mp4" />
             </video>
           </div>
@@ -470,6 +470,7 @@
     function showResult() {
       result.classList.add("show");
       if (!finalVideo) return;
+      finalVideo.muted = true;
       finalVideo.currentTime = 0;
       finalVideo.play().catch(() => {});
     }
